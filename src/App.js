@@ -1,7 +1,12 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useLocation,
+} from "react-router-dom";
 import { motion } from "framer-motion";
-import AnimatePresence from "framer-motion/dist/framer-motion";
 import Home from "./pages/Home";
 import Skills from "./pages/Skills";
 import Experience from "./pages/Experience";
@@ -12,27 +17,40 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/skills">Skills</Link>
-          <Link to="/experience">Experience</Link>
-          <Link to="/projects">Projects</Link>
-        </nav>
-
-        <motion.main
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/skills" element={<Skills />} />
-            <Route path="/experience" element={<Experience />} />
-            <Route path="/projects" element={<Projects />} />
-          </Routes>
-        </motion.main>
+        {/* Everything that needs Router context goes INSIDE here */}
+        <AppContent />
       </Router>
     </div>
+  );
+}
+
+// NEW: Move the content + useLocation into its own component
+function AppContent() {
+  const location = useLocation(); // Now safe — we're inside <Router>
+
+  return (
+    <>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/skills">Skills</Link>
+        <Link to="/experience">Experience</Link>
+        <Link to="/projects">Projects</Link>
+      </nav>
+
+      <motion.main
+        key={location.pathname} // Triggers animation on every page change
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/skills" element={<Skills />} />
+          <Route path="/experience" element={<Experience />} />
+          <Route path="/projects" element={<Projects />} />
+        </Routes>
+      </motion.main>
+    </>
   );
 }
 
