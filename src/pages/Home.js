@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion"; // This lets us make things fade in like magic
-import AnimatePresence from "framer-motion/dist/framer-motion";
+
 function Home() {
   return (
     <motion.div

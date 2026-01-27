@@ -1,21 +1,27 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 function Skills() {
   return (
-    <div className="glass-panel">
+    <motion.div
+      className="glass-panel"
+      initial={{ opacity: 0, y: 30 }} // Starts invisible and slightly lower
+      animate={{ opacity: 1, y: 0 }} // Fades in and slides up
+      transition={{ duration: 0.8, ease: "easeOut" }} // 0.8 seconds, gentle
+    >
       <h1>My Skills</h1>
       <ul>
         <li>JavaScript — Expert (self-taught during COVID!)</li>
-        <li>React + Redux — Building interactive UIs like this site</li>
-        <li>Node.js + Express — Server and API power</li>
-        <li>TypeScript — Makes code safer and smarter</li>
-        <li>Python — Fun scripting and experiments</li>
+        <li>React + Redux — Building interactive UIs</li>
+        <li>Node.js + Express — Server-side magic</li>
+        <li>TypeScript — Safer, smarter JavaScript</li>
+        <li>Python — Some scripting & fun projects</li>
         <li>Ruby + Ruby on Rails — Full-stack web apps</li>
-        <li>Docker — Packaging apps like space capsules</li>
-        <li>PostgreSQL (PSQL) — Strong databases</li>
-        <li>RSpec — Writing tests like a pro</li>
+        <li>Docker — Packaging apps like containers on a spaceship</li>
+        <li>PSQL (PostgreSQL) — Powerful databases</li>
+        <li>RSpec — Testing like a pro</li>
       </ul>
-    </div>
+    </motion.div>
   );
 }
 
