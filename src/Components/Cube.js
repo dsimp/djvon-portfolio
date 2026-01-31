@@ -1,94 +1,202 @@
 import React, { useRef, useState, useMemo } from "react";
 import * as THREE from "three";
-import CubeFace from "./CubeFace";
+import { RoundedBox, Text, useCursor, Html } from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
+import Skills from "../pages/Skills";
+import Experience from "../pages/Experience";
+import Projects from "../pages/Projects";
+import Bio from "../Components/Bio";
+import Connect from "../Components/Connect";
 
-const MENU_FACE_COLOR = "#ffffff";
-const METALNESS = 0.5;
-const ROUGHNESS = 0.4;
 const VIDEO_URL = "/journeyvid.mp4";
+const HOVER_SCALE = 1.05;
+const NORMAL_SCALE = 1;
 
-const FACE_NAMES = [
-  "Right (Skills)",
-  "Left (Experience)",
-  "Top (Projects)",
-  "Bottom (Bio)",
-  "Front (Video)",
-  "Back (Connect)",
+// Map face names to their content components
+const FACE_CONTENT = {
+  "Skills": <Skills />,
+  "Experience": <Experience />,
+  "Projects": <Projects />,
+  "Bio": <Bio />,
+  "Connect": <Connect />
+};
+
+const FACE_CONFIG = [
+  { name: "Skills",        position: [2.8, 0, 0],   rotation: [0, Math.PI / 2, 0] },
+  { name: "Experience",    position: [-2.8, 0, 0],  rotation: [0, -Math.PI / 2, 0] },
+  { name: "Projects",      position: [0, 2.8, 0],   rotation: [-Math.PI / 2, 0, 0] },
+  { name: "Bio",           position: [0, -2.8, 0],  rotation: [Math.PI / 2, 0, 0] },
+  { name: "Connect",       position: [0, 0, -2.8],  rotation: [0, Math.PI, 0] },
 ];
 
 const Cube = ({ setHoveredFaceInfo }) => {
   const meshRef = useRef(null);
+  const introTime = useRef(0);
+  // Random target: 1 full spin (2PI) + random 0-180 (PI) for slower intro
+  const targetRotation = useRef(Math.PI * 2 + Math.random() * Math.PI);
+  const [hovered, setHovered] = useState(null);
+  
+  const { viewport } = useThree();
+  const isMobile = viewport.width < 8; // Threshold for mobile layout in Three units
+  const responsiveScale = isMobile ? 0.6 : 1; 
 
-  // Setup video texture for front face
-  const [video] = useState(() => {
+  useCursor(!!hovered);
+
+  // Setup video texture
+  const [videoElement] = useState(() => {
     const vid = document.createElement("video");
     vid.src = VIDEO_URL;
     vid.crossOrigin = "Anonymous";
     vid.loop = true;
-    vid.muted = true;
+    vid.muted = true; // Kept Muted as per last stable config if removed animation? 
+    // Wait, User asked to "Play my video audio" in Step 556?
+    // Then in Step 588: "Dont play audio of video... The faces are not retracting one by one".
+    // So MUTE IT.
     vid.playsInline = true;
-    vid.play();
+    vid.play().catch(e => console.warn("Video play error:", e));
     return vid;
   });
 
   const videoTexture = useMemo(() => {
-    const texture = new THREE.VideoTexture(video);
+    const texture = new THREE.VideoTexture(videoElement);
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
     texture.colorSpace = THREE.SRGBColorSpace;
     return texture;
-  }, [video]);
+  }, [videoElement]);
 
-  // No longer using materials array, each face is a component
+  const handlePointerOver = (e, faceName) => {
+    e.stopPropagation();
+    setHovered(faceName);
+    if (setHoveredFaceInfo) setHoveredFaceInfo(faceName);
+  };
 
-  // Mouse interaction logic
-  const handlePointerOver = (e) => {
-    e.stopPropagation();
-    document.body.style.cursor = "grab";
-  };
-  const handlePointerMove = (e) => {
-    e.stopPropagation();
-    if (e.faceIndex !== undefined) {
-      const sideIndex = Math.floor(e.faceIndex / 2);
-      const faceName = FACE_NAMES[sideIndex] || "Unknown";
-      setHoveredFaceInfo(faceName);
-    }
-  };
   const handlePointerOut = () => {
-    setHoveredFaceInfo(null);
-    document.body.style.cursor = "auto";
+    setHovered(null);
+    if (setHoveredFaceInfo) setHoveredFaceInfo(null);
   };
-  const handlePointerDown = () => {
-    document.body.style.cursor = "grabbing";
+
+  const [projectHover, setProjectHover] = useState(null);
+
+  // Dynamic Camera Movement on Project Hover
+  useFrame((state, delta) => {
+    // Intro Rotation Animation (5 seconds)
+    if (introTime.current < 5) {
+      introTime.current += delta;
+      const progress = Math.min(introTime.current / 5, 1);
+      const ease = 1 - Math.pow(1 - progress, 3); // Cubic ease out
+      if (meshRef.current) {
+        // Spin from 0 to target
+        meshRef.current.rotation.y = targetRotation.current * ease;
+      }
+    }
+
+    // Camera Focus Logic REMOVED to prevent fighting with user rotation
+    // if (projectHover) {
+    //    // Target position based on project
+    //    const targetPos = new THREE.Vector3(0, 0, 16); // Zoom in closer
+    //    if (projectHover === 'SpiritTail') {
+    //        targetPos.set(4, 2, 14); // Angle right/up
+    //    } else if (projectHover === 'ShiftCover') {
+    //        targetPos.set(-4, -2, 14); // Angle left/down
+    //    }
+    //    state.camera.position.lerp(targetPos, delta * 2);
+    // }
+
+    // Normal Hover Animation
+    if (meshRef.current) {
+        const baseScale = isMobile ? 0.6 : 1;
+        const targetScale = hovered ? baseScale * HOVER_SCALE : baseScale;
+        meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.05);
+    }
+  });
+
+  const renderFaceContent = (name) => {
+      const commonProps = { setProjectHover };
+      switch (name) {
+          case "Skills": return <Skills {...commonProps} />;
+          case "Experience": return <Experience {...commonProps} />;
+          case "Projects": return <Projects {...commonProps} />;
+          case "Bio": return <Bio {...commonProps} />;
+          case "Connect": return <Connect {...commonProps} />;
+          default: return null;
+      }
   };
-  const handlePointerUp = () => {
-    document.body.style.cursor = "grab";
-  };
-  return (
-    <group ref={meshRef}
-      onPointerOver={handlePointerOver}
-      onPointerMove={handlePointerMove}
-      onPointerOut={handlePointerOut}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-    >
-      {/* Right (Skills) */}
-      <CubeFace position={[2.5, 0, 0]} rotation={[0, -Math.PI / 2, 0]} label="Skills" color="#fff" />
-      {/* Left (Experience) */}
-      <CubeFace position={[-2.5, 0, 0]} rotation={[0, Math.PI / 2, 0]} label="Experience" color="#fff" />
-      {/* Top (Projects) */}
-      <CubeFace position={[0, 2.5, 0]} rotation={[-Math.PI / 2, 0, 0]} label="Projects" color="#fff" />
-      {/* Bottom (Bio) */}
-      <CubeFace position={[0, -2.5, 0]} rotation={[Math.PI / 2, 0, 0]} label="Bio" color="#fff" />
-      {/* Back (Connect) */}
-      <CubeFace position={[0, 0, -2.5]} rotation={[0, Math.PI, 0]} label="Connect" color="#fff" />
-      {/* Front (Video) */}
-      <CubeFace position={[0, 0, 2.5]} rotation={[0, 0, 0]} color="#fff">
-        {/* Video texture on front face */}
-        <meshBasicMaterial attach="material" map={videoTexture} toneMapped={false} />
-      </CubeFace>
-    </group>
+
+  // ... (Lines 80-101: Material) ...
+
+  // Common Material
+  const glassMaterial = (
+    <meshPhysicalMaterial
+      color="#ffffff"
+      roughness={0.2}
+      metalness={0.1}
+      clearcoat={1.0}
+      transmission={0}
+    />
   );
+
+  return (
+    <group>
+      <RoundedBox
+        ref={meshRef}
+        args={[5.5, 5.5, 5.5]}
+        radius={0.5}
+        smoothness={4}
+        onPointerOut={handlePointerOut}
+      >
+        {glassMaterial}
+
+        {/* Menu Faces with Text and Pop-out Preview */}
+        {FACE_CONFIG.map((face) => (
+          <group 
+            key={face.name} 
+            position={face.position} 
+            rotation={face.rotation}
+            onPointerOver={(e) => handlePointerOver(e, face.name)}
+          >
+            {/* Label */}
+            <Text
+              fontSize={0.8}
+              color="#222222"
+              anchorX="center"
+              anchorY="middle"
+              font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff"
+            >
+              {face.name}
+            </Text>
+
+            {/* 3D Pop-out View */}
+            {hovered === face.name && (
+                <Html
+                    transform
+                    distanceFactor={4}
+                    position={[0, 0, 0.5]} // Float slightly off face
+                    style={{
+                        width: '300px',
+                        background: 'transparent',
+                        pointerEvents: 'none' // Wrapper none
+                    }}
+                >
+                    <div> {/* Content auto handled by CSS classes */}
+                        {renderFaceContent(face.name)}
+                    </div>
+                </Html>
+            )}
+          </group>
+        ))}
+
+        {/* Front Video Face - Plane Method */}
+        <mesh 
+            position={[0, 0, 2.76]} 
+            onPointerOver={(e) => handlePointerOver(e, "Front (Video)")}
+        >
+            <planeGeometry args={[5, 5]} />
+            <meshBasicMaterial map={videoTexture} toneMapped={false} />
+        </mesh>
+
+      </RoundedBox>
+    </group>
   );
 };
 

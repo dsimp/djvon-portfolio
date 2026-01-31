@@ -1,98 +1,169 @@
-import React, { useState } from "react"; // Line 1 - React tools, useState for hover memory.
-import { Canvas } from "@react-three/fiber"; // Line 2 - 3D stage like a canvas for painting.
-import { OrbitControls } from "@react-three/drei"; // Line 3 - Mouse drag tool—like a joystick for rotating.
-import Cube from "../Components/Cube"; // Line 4 - Your cube recipe.
-import Skills from "./Skills"; // Line 5 - Skills page.
-import Experience from "./Experience"; // Line 6 - Experience.
-import Projects from "./Projects"; // Line 7 - Projects.
-import Bio from "../Components/Bio"; // Line 8 - Bio.
-import Connect from "../Components/Connect"; // Line 9 - Connect.
+import React, { useState, useEffect } from "react";
+import * as THREE from "three";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls, Environment } from "@react-three/drei";
+import { FaVolumeUp, FaGithub, FaLinkedin } from "react-icons/fa";
+import { motion } from "framer-motion";
+import Cube from "../Components/Cube";
+import AIChat from "../Components/AIChat";
+
+// Camera Animation Component
+const IntroCamera = () => {
+  const { camera } = useThree();
+  
+  useFrame((state, delta) => {
+    // Smoothly fly camera from z=40 to z=14
+    // We only want this to run at the start. 
+    // Lerping continuously to 14 is fine as long as OrbitControls is aware or we stop interaction initially.
+    // However, simplest "fly in" is to just lerp until close.
+    if (camera.position.z > 14.1) {
+        camera.position.z = THREE.MathUtils.lerp(camera.position.z, 14, delta * 2);
+    }
+  });
+  return null;
+};
 
 const Home = () => {
-  // Line 10 - Main page function.
-  const [hoveredFaceInfo, setHoveredFaceInfo] = useState(null); // Line 11 - Memory for hover name.
+  const [activePulsate, setActivePulsate] = useState(null);
 
-  // Map face to route and preview component
-  const faceToRoute = {
-    "Right (Skills)": { route: "/skills", preview: <Skills /> },
-    "Left (Experience)": { route: "/experience", preview: <Experience /> },
-    "Top (Projects)": { route: "/projects", preview: <Projects /> },
-    "Bottom (Bio)": { route: null, preview: <Bio /> },
-    "Back (Connect)": { route: null, preview: <Connect /> },
-  };
-
-  // Show preview window for hovered face only while hovering
-  const getPreview = () => {
-    if (!hoveredFaceInfo || !faceToRoute[hoveredFaceInfo]) return null;
-    return (
-      <div
-        onClick={() => {
-          const route = faceToRoute[hoveredFaceInfo].route;
-          if (route) window.location.hash = route;
-        }}
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%) scale(1.05)",
-          minWidth: 340,
-          minHeight: 220,
-          background: "rgba(255,255,255,0.85)",
-          borderRadius: 24,
-          boxShadow: "0 8px 40px 0 rgba(0,0,0,0.13)",
-          border: "1.5px solid #eaeaea",
-          padding: "2.2em 2.5em 1.5em 2.5em",
-          zIndex: 10,
-          cursor: faceToRoute[hoveredFaceInfo].route ? "pointer" : "default",
-          transition: "box-shadow 0.2s, transform 0.2s",
-          backdropFilter: "blur(6px) saturate(1.2)",
-          pointerEvents: hoveredFaceInfo ? "auto" : "none",
-        }}
-      >
-        {faceToRoute[hoveredFaceInfo].preview}
-        {faceToRoute[hoveredFaceInfo].route && (
-          <div
-            style={{
-              textAlign: "center",
-              marginTop: 18,
-              fontSize: "0.95em",
-              color: "#888",
-            }}
-          >
-            Click to enter
-          </div>
-        )}
-      </div>
+  const handleSpeak = () => {
+    const text = "Duh-von Simp-son";
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Attempt to find a smoother voice
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(voice => 
+      voice.name.includes("David") || 
+      (voice.name.includes("Male") && voice.lang.includes("en")) ||
+      (voice.name.includes("Google") && voice.lang.includes("en-US"))
     );
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+    
+    utterance.rate = 0.9; 
+    utterance.pitch = 0.8; 
+    utterance.volume = 1;
+
+    // Animation Sequence
+    setActivePulsate('first');
+    setTimeout(() => setActivePulsate('last'), 600); // Pulse "Simpson" after ~0.6s
+    setTimeout(() => setActivePulsate(null), 1200);
+
+    window.speechSynthesis.cancel(); 
+    window.speechSynthesis.speak(utterance);
   };
+  
+  // Animation Variants removed
 
   return (
-    // Line 20 - What page looks like.
     <div
       style={{
         position: "relative",
         width: "100vw",
         height: "100vh",
-        background: "#fff",
+        background: "#e0e0e0", 
       }}
     >
-      {" "}
-      // Line 21 - Full screen white bg—like bright room, cube visible.
-      <Canvas camera={{ position: [7, 7, 7], fov: 50 }}>
-        {" "}
-        // Line 22 - 3D canvas.
-        <ambientLight intensity={0.5} /> // Line 23 - Soft light—why? Even glow
-        for pearl.
-        <pointLight position={[10, 10, 10]} /> // Line 24 - Spot light—why?
-        Shiny highlights on white bg.
-        <Cube setHoveredFaceInfo={setHoveredFaceInfo} /> // Line 25 - Your cube,
-        with hover setter.
-        <OrbitControls enableZoom={false} /> // Line 26 - Mouse rotate/drag—why?
-        User control, no zoom for minimalist.
+        <style>{`
+            @keyframes softPulse {
+                0% { transform: scale(1); filter: brightness(100%); }
+                50% { transform: scale(1.1); filter: brightness(90%); text-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+                100% { transform: scale(1); filter: brightness(100%); }
+            }
+        `}</style>
+
+      {/* Branding Overlay - Static */}
+      <div 
+        style={{ 
+          position: 'absolute', 
+          top: '40px', 
+          left: '60px', 
+          zIndex: 10,
+          pointerEvents: 'none', // Wrapper is none, children auto
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          lineHeight: '0.8'
+        }}
+      >
+        <div style={{ pointerEvents: 'none' }}> 
+            <h1 
+                className="bubbling-text" 
+                style={{ 
+                    margin: 0, 
+                    fontSize: '6rem',
+                    animation: activePulsate === 'first' ? 'softPulse 0.5s ease-in-out' : 'none',
+                    transition: 'all 0.3s ease'
+                }}
+            >
+                Djvon
+            </h1>
+            <h1 
+                className="bubbling-text" 
+                style={{ 
+                    margin: 0, 
+                    fontSize: '6rem',
+                    animation: activePulsate === 'last' ? 'softPulse 0.5s ease-in-out' : 'none',
+                    transition: 'all 0.3s ease'
+                }}
+            >
+                Simpson
+            </h1>
+            <h2 className="bubbling-text" style={{ margin: '1rem 0 0 0', fontSize: '2rem' }}>Engineer and AI Enthusiast</h2>
+            
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', pointerEvents: 'auto' }}>
+                <a href="https://github.com/dsimp" target="_blank" rel="noreferrer">
+                    <button className="neumorphic-inset" aria-label="GitHub">
+                        <FaGithub size={20} color="#555" />
+                    </button>
+                </a>
+                <a href="https://www.linkedin.com/in/djvon-simpson-9341a186/" target="_blank" rel="noreferrer">
+                    <button className="neumorphic-inset" aria-label="LinkedIn">
+                        <FaLinkedin size={20} color="#555" />
+                    </button>
+                </a>
+                <button 
+                    className="neumorphic-inset" 
+                    onClick={handleSpeak}
+                    aria-label="Pronounce Name"
+                >
+                    <FaVolumeUp size={20} color="#555" />
+                </button>
+            </div>
+        </div>
+        
+        {/* Pronunciation Button Removed from bottom, moved inline above */}
+      </div>
+
+      <Canvas 
+        camera={{ position: [0, 0, 18], fov: 45 }} 
+      >
+        <color attach="background" args={["#e0e0e0"]} /> 
+        <Environment preset="studio" />
+        <ambientLight intensity={1.5} />
+        <pointLight position={[10, 10, 10]} intensity={1} />
+        
+        {/* <IntroCamera /> Removed to prevent fighting with controls */}
+        
+        <Cube />
+        
+        <OrbitControls 
+            enableZoom={true} 
+            enableDamping={true} 
+            dampingFactor={0.05}
+            minDistance={10}
+            maxDistance={40}
+            autoRotate={false}
+            autoRotateSpeed={1.0}
+            makeDefault 
+        />
       </Canvas>
-      {getPreview()}
-    </div> // Line 31
-  ); // Line 32
+      
+      <AIChat />
+    </div>
+  );
 };
 
 export default Home; // Line 33 - Share page.

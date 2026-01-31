@@ -1,21 +1,16 @@
 body {
-  margin: 0; /* No extra space, like gluing paper edge-to-edge */
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; /* Simple, clean fonts like a spaceship computer screen—easy and modern */
-  background: linear-gradient(
-    to bottom,
-    #ffffff,
-    #f0f0f0
-  ); /* Fades from pure white to light gray, like bright lights in a "Scream" spaceship for depth without clutter */
-  color: black; /* Black text for high contrast, like bold words on a white wall—sharp and sci-fi stark */
-  height: 100vh; /* Full screen height, like covering the whole window */
-  overflow-y: auto; /* Lets scrolling happen smoothly, like turning pages */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #e0e0e0;
 }
 
 .App {
-  max-width: 1200px; /* Centers content, not too wide—like a control panel in the middle */
-  margin: 0 auto; /* Puts it in the center horizontally */
-  padding: 20px; /* A little cushion inside */
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 nav {

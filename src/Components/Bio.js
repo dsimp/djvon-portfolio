@@ -4,33 +4,28 @@ import Slideshow from "./Slideshow";
 
 const Bio = () => {
   return (
-    <div className="intro-div">
-      <h2>Hi, my name is</h2> <h1>Djvon Simpson.</h1>
-      <h2>
-        My love for the web is something that existed and has grown over the
-        course of my life. From the countless number of video games I've played,
-        data I've researched, the convenience of online shopping, the impact it
-        has on my life (maybe all lives) is astronomical. So much, that it
-        inspired me to learn how to contribute. Now,
-      </h2>
-      <h1> I'm an engineer!</h1>
-      <img id="smile" src={Djvon} alt=""></img>
-      <section className="skill-sect">
-        <p>
-          Based in Chicago, IL. Thanks to Pluralsight, Udemy, Youtube and the
-          many resources on Google, I've become profecient in
+    <div className="glass-card">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <img 
+            src={Djvon} 
+            alt="Djvon" 
+            style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #fff', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+        />
+        <div>
+            <h1 className="card-title" style={{ fontSize: '1.5rem' }}>Djvon Simpson</h1>
+            <p className="card-subtitle">Software Engineer</p>
+        </div>
+      </div>
+      
+      <div className="card-section" style={{ background: 'rgba(255,255,255,0.4)', borderRadius: '12px', padding: '1rem', marginTop: '1rem' }}>
+        <p style={{ fontSize: '1.0rem', lineHeight: '1.6', fontStyle: 'italic', color: '#333' }}>
+          "The power to dream something into reality is what drives me. From the architecture of a backend to the pixel-perfect precision of a frontend, I build systems that come alive. I don't just code; I create worlds."
         </p>
-        <ul className="skills">
-          <li>HTML</li>
-          <li>CSS</li>
-          <li>Javascript</li>
-          <li>jquery</li>
-          <li>React</li>
-          <li>Redux</li>
-          <li>Nodejs</li>
-        </ul>
-      </section>
-      <Slideshow />
+      </div>
+
+      <div style={{ marginTop: 'auto' }}>
+        <Slideshow />
+      </div>
     </div>
   );
 };
