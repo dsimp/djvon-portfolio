@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import Skills from "./pages/Skills";
 import Experience from "./pages/Experience";
 import Projects from "./pages/Projects";
+import AIChat from "./Components/AIChat";
 import "./App.css";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
       <Router>
         {/* Everything that needs Router context goes INSIDE here */}
         <AppContent />
+        <AIChat />
       </Router>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaPaperPlane, FaTimes } from 'react-icons/fa';
-// import { GoogleGenerativeAI } from "@google/generative-ai"; // Uncomment when installed
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const AIChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,26 +28,20 @@ const AIChat = () => {
     setIsLoading(true);
 
     try {
-      // Placeholder for actual Gemini API call
-      // const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-      // const model = genAI.getGenerativeModel({ model: "gemini-pro"});
-      // const result = await model.generateContent(input);
-      // const response = await result.response;
-      // const text = response.text();
+      const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro"});
       
-      // Simulated response for now
-      setTimeout(() => {
-        const botMessage = { 
-            role: 'bot', 
-            text: "I'm currently in demo mode. To make me real, you'll need to add your Gemini API Key!" 
-        };
-        setMessages(prev => [...prev, botMessage]);
-        setIsLoading(false);
-      }, 1000);
+      const result = await model.generateContent(input);
+      const response = await result.response;
+      const text = response.text();
+      
+      const botMessage = { role: 'bot', text: text };
+      setMessages(prev => [...prev, botMessage]);
+      setIsLoading(false);
 
     } catch (error) {
       console.error("Chat Error:", error);
-      setMessages(prev => [...prev, { role: 'bot', text: "Sorry, I ran into an error connecting to the AI." }]);
+      setMessages(prev => [...prev, { role: 'bot', text: "Sorry, I ran into an error connecting to the AI. Please make sure the API Key is valid." }]);
       setIsLoading(false);
     }
   };
