@@ -116,12 +116,12 @@ const Home = () => {
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', pointerEvents: 'auto' }}>
                 <a href="https://github.com/dsimp" target="_blank" rel="noreferrer">
                     <button className="neumorphic-inset" aria-label="GitHub">
-                        <FaGithub size={20} color="#555" />
+                        <FaGithub size={28} color="#171515" />
                     </button>
                 </a>
                 <a href="https://www.linkedin.com/in/djvon-simpson-9341a186/" target="_blank" rel="noreferrer">
                     <button className="neumorphic-inset" aria-label="LinkedIn">
-                        <FaLinkedin size={20} color="#555" />
+                        <FaLinkedin size={28} color="#0077b5" />
                     </button>
                 </a>
                 <button 
@@ -129,7 +129,7 @@ const Home = () => {
                     onClick={handleSpeak}
                     aria-label="Pronounce Name"
                 >
-                    <FaVolumeUp size={20} color="#555" />
+                    <FaVolumeUp size={24} color="#333" />
                 </button>
             </div>
         </div>
