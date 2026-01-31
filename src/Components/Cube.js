@@ -37,7 +37,7 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
   const [hovered, setHovered] = useState(null);
   
   const { viewport } = useThree();
-  const isMobile = viewport.width < 10; // Increased threshold to catch tablets/smaller laptops
+  const isMobile = viewport.width < 14; // Higher threshold to catch split-screens/tablets
   const responsiveScale = isMobile ? 0.5 : 1; 
 
   useCursor(!!hovered, 'pointer', 'auto');
@@ -151,9 +151,10 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
     />
   );
 
+  // "Center the cube on ALL screen sizes... like it was once before"
+  
   return (
-    // Shift further RIGHT on Desktop, further DOWN on mobile
-    <group position={isMobile ? [0, -4.5, 0] : [7.5, 0, 0]}>
+    <group position={[0, 0, 0]}>
       <RoundedBox
         ref={meshRef}
         args={[5.5, 5.5, 5.5]}
@@ -188,6 +189,7 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
                 <Html
                     transform
                     distanceFactor={4}
+                    zIndexRange={[100, 0]} // Prioritize these elements efficiently
                     position={[0, 0, 0.5]} // Float slightly off face
                     style={{
                         width: '300px',

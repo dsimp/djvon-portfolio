@@ -56,7 +56,7 @@ const AIChat = () => {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+    <div style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 1000, width: 0, height: 0, overflow: 'visible', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', pointerEvents: 'none' }}>
       
       {/* Chat Window */}
       {isOpen && (
@@ -70,7 +70,8 @@ const AIChat = () => {
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                animation: 'slideUp 0.3s ease-out'
+                animation: 'slideUp 0.3s ease-out',
+                pointerEvents: 'auto' // Re-enable clicks
             }}
         >
              {/* Header */}
@@ -161,7 +162,7 @@ const AIChat = () => {
       <button 
         className="neumorphic-btn" 
         onClick={toggleChat}
-        style={{ width: '60px', height: '60px' }}
+        style={{ width: '60px', height: '60px', pointerEvents: 'auto' }} // Re-enable clicks
       >
         <FaRobot size={24} color="#555" />
       </button>

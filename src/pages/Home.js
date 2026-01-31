@@ -87,7 +87,9 @@ const Home = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-start',
-          lineHeight: '0.8'
+          lineHeight: '0.8',
+          maxWidth: '40vw', // Tighter constraint (40%) to ensure center is clear
+          overflow: 'visible' 
         }}
       >
         <div style={{ pointerEvents: 'none' }}> 
@@ -95,7 +97,7 @@ const Home = () => {
                 className="bubbling-text" 
                 style={{ 
                     margin: 0, 
-                    fontSize: '6rem',
+                    fontSize: 'clamp(3rem, 8vw, 6rem)', // Responsive sizing
                     animation: activePulsate === 'first' ? 'softPulse 0.5s ease-in-out' : 'none',
                     transition: 'all 0.3s ease'
                 }}
@@ -106,7 +108,7 @@ const Home = () => {
                 className="bubbling-text" 
                 style={{ 
                     margin: 0, 
-                    fontSize: '6rem',
+                    fontSize: 'clamp(3rem, 8vw, 6rem)', // Responsive sizing
                     animation: activePulsate === 'last' ? 'softPulse 0.5s ease-in-out' : 'none',
                     transition: 'all 0.3s ease'
                 }}
@@ -153,10 +155,11 @@ const Home = () => {
         
         <OrbitControls 
             enableZoom={true} 
+            enablePan={true} // Allow user to move the whole scene "free across the screen"
             enableDamping={true} 
             dampingFactor={0.05}
             minDistance={10}
-            maxDistance={40}
+            maxDistance={50}
             autoRotate={false}
             autoRotateSpeed={1.0}
             makeDefault 
