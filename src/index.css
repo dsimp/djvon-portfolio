@@ -241,7 +241,9 @@ button.primary-btn:hover {
 .bubbling-card a,
 .bubbling-card button,
 .bubbling-card .project-card,
-.bubbling-card .tag-container {
+.bubbling-card .tag-container,
+.bubbling-card input,
+.bubbling-card textarea {
   pointer-events: auto;
   cursor: pointer;
 }

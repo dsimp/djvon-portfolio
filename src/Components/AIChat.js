@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaPaperPlane, FaTimes } from 'react-icons/fa';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { SYSTEM_PROMPT } from "./portfolioData";
 
 const AIChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,9 +30,12 @@ const AIChat = () => {
 
     try {
       const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash"});
       
-      const result = await model.generateContent(input);
+      // Combine system prompt with user input for context
+      const currentDate = new Date().toLocaleString();
+      const fullPrompt = `${SYSTEM_PROMPT}\n\nCurrent Date/Time: ${currentDate}\n\nUser Question: ${input}`;
+      const result = await model.generateContent(fullPrompt);
       const response = await result.response;
       const text = response.text();
       
@@ -40,7 +44,8 @@ const AIChat = () => {
       setIsLoading(false);
 
     } catch (error) {
-      console.error("Chat Error:", error);
+      console.error("Chat Error Details:", error);
+      console.log("API Key present:", !!process.env.REACT_APP_GEMINI_API_KEY);
       setMessages(prev => [...prev, { role: 'bot', text: "Sorry, I ran into an error connecting to the AI. Please make sure the API Key is valid." }]);
       setIsLoading(false);
     }
