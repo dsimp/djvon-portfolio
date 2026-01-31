@@ -29,7 +29,7 @@ const FACE_CONFIG = [
   { name: "Connect",       position: [0, 0, -2.8],  rotation: [0, Math.PI, 0] },
 ];
 
-const Cube = ({ setHoveredFaceInfo }) => {
+const Cube = ({ setHoveredFaceInfo, navigate }) => {
   const meshRef = useRef(null);
   const introTime = useRef(0);
   // Random target: 1 full spin (2PI) + random 0-180 (PI) for slower intro
@@ -40,7 +40,7 @@ const Cube = ({ setHoveredFaceInfo }) => {
   const isMobile = viewport.width < 8; // Threshold for mobile layout in Three units
   const responsiveScale = isMobile ? 0.6 : 1; 
 
-  useCursor(!!hovered);
+  useCursor(!!hovered, 'pointer', 'auto');
 
   // Setup video texture
   const [videoElement] = useState(() => {
@@ -74,6 +74,21 @@ const Cube = ({ setHoveredFaceInfo }) => {
   const handlePointerOut = () => {
     setHovered(null);
     if (setHoveredFaceInfo) setHoveredFaceInfo(null);
+  };
+
+  const handleClick = (e, faceName) => {
+      e.stopPropagation();
+      if (navigate) {
+          const routeMap = {
+             "Skills": "/skills",
+             "Experience": "/experience",
+             "Projects": "/projects",
+             "Bio": "/bio",
+             "Connect": "/connect"
+          };
+          const target = routeMap[faceName];
+          if (target) navigate(target);
+      }
   };
 
   const [projectHover, setProjectHover] = useState(null);
@@ -154,6 +169,7 @@ const Cube = ({ setHoveredFaceInfo }) => {
             position={face.position} 
             rotation={face.rotation}
             onPointerOver={(e) => handlePointerOver(e, face.name)}
+            onClick={(e) => handleClick(e, face.name)}
           >
             {/* Label */}
             <Text

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Environment } from "@react-three/drei";
@@ -25,6 +26,7 @@ const IntroCamera = () => {
 
 const Home = () => {
   const [activePulsate, setActivePulsate] = useState(null);
+  const navigate = useNavigate();
 
   const handleSpeak = () => {
     const text = "Duh-von Simp-son";
@@ -147,7 +149,7 @@ const Home = () => {
         
         {/* <IntroCamera /> Removed to prevent fighting with controls */}
         
-        <Cube />
+        <Cube navigate={navigate} />
         
         <OrbitControls 
             enableZoom={true} 

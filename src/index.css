@@ -126,7 +126,7 @@ button.primary-btn:hover {
 }
 
 .bubbling-text {
-  color: #e0e0e0; /* Match background */
+  color: #bababa; /* Slightly darker than background #e0e0e0 for better visibility */
   font-family: var(--font-sans);
   font-weight: 900;
   letter-spacing: -2px;
@@ -134,8 +134,8 @@ button.primary-btn:hover {
   
   /* The "Bubbling Through" Effect */
   text-shadow: 
-    -5px -5px 12px rgba(255, 255, 255, 1), /* Highlight top-left */
-    8px 8px 16px rgba(0, 0, 0, 0.25); /* Shadow bottom-right */
+    -4px -4px 10px rgba(255, 255, 255, 1), /* Highlight top-left */
+    6px 6px 12px rgba(0, 0, 0, 0.4); /* Darker Shadow bottom-right */
     
   /* Optional: Smooth transition if we animate it */
   transition: all 0.3s ease;
