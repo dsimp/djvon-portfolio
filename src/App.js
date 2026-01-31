@@ -78,10 +78,11 @@ function AppContent() {
   return (
     <motion.main
       key={location.pathname} // Triggers animation on every page change
-      initial={{ opacity: 0, scale: 0.5, filter: 'blur(10px)' }}
-      animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-      exit={{ opacity: 0, scale: 1.5, filter: 'blur(10px)' }} // Zoom out effect (requires AnimatePresence)
-      transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }} // Cinema-style easing
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 1.02 }} 
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
     >
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>

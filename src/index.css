@@ -126,7 +126,7 @@ button.primary-btn:hover {
 }
 
 .bubbling-text {
-  color: #bababa; /* Slightly darker than background #e0e0e0 for better visibility */
+  color: #e0e0e0; /* Original light grey blending with background */
   font-family: var(--font-sans);
   font-weight: 900;
   letter-spacing: -2px;

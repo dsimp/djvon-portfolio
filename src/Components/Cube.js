@@ -9,7 +9,7 @@ import Bio from "../Components/Bio";
 import Connect from "../Components/Connect";
 
 const VIDEO_URL = "/journeyvid.mp4";
-const HOVER_SCALE = 1.8; // Exaggerated zoom on hover
+const HOVER_SCALE = 1.05; // Reverted to subtle zoom
 const NORMAL_SCALE = 1;
 
 // Map face names to their content components
