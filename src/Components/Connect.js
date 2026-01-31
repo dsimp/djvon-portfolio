@@ -3,7 +3,7 @@ import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const Connect = () => {
   return (
-    <div className="bubbling-card" style={{ justifyContent: 'center', textAlign: 'center' }}>
+    <div className="bubbling-card" style={{ justifyContent: 'center', textAlign: 'center', pointerEvents: 'auto' }}>
       <h2 className="card-title" style={{ fontSize: '1.4rem' }}>
         Let's Build Together
       </h2>

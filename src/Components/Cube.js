@@ -9,7 +9,7 @@ import Bio from "../Components/Bio";
 import Connect from "../Components/Connect";
 
 const VIDEO_URL = "/journeyvid.mp4";
-const HOVER_SCALE = 1.05;
+const HOVER_SCALE = 1.8; // Exaggerated zoom on hover
 const NORMAL_SCALE = 1;
 
 // Map face names to their content components
@@ -37,8 +37,8 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
   const [hovered, setHovered] = useState(null);
   
   const { viewport } = useThree();
-  const isMobile = viewport.width < 8; // Threshold for mobile layout in Three units
-  const responsiveScale = isMobile ? 0.6 : 1; 
+  const isMobile = viewport.width < 10; // Increased threshold to catch tablets/smaller laptops
+  const responsiveScale = isMobile ? 0.5 : 1; 
 
   useCursor(!!hovered, 'pointer', 'auto');
 
@@ -152,7 +152,8 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
   );
 
   return (
-    <group>
+    // Shift further RIGHT on Desktop, further DOWN on mobile
+    <group position={isMobile ? [0, -4.5, 0] : [7.5, 0, 0]}>
       <RoundedBox
         ref={meshRef}
         args={[5.5, 5.5, 5.5]}
@@ -191,10 +192,10 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
                     style={{
                         width: '300px',
                         background: 'transparent',
-                        pointerEvents: 'none' // Wrapper none
+                        pointerEvents: 'none' // Wrapper none, but children need to be clickable
                     }}
                 >
-                    <div> {/* Content auto handled by CSS classes */}
+                    <div style={{ pointerEvents: 'auto' }}> {/* Ensure interactions work */}
                         {renderFaceContent(face.name)}
                     </div>
                 </Html>
