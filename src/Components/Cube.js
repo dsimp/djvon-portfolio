@@ -8,6 +8,8 @@ import Projects from "../pages/Projects";
 import Bio from "../Components/Bio";
 import Connect from "../Components/Connect";
 
+import SoundManager from "../utils/SoundManager";
+
 const VIDEO_URL = "/journeyvid.mp4";
 const HOVER_SCALE = 1.05; // Reverted to subtle zoom
 const NORMAL_SCALE = 1;
@@ -42,6 +44,24 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
 
   useCursor(!!hovered, 'pointer', 'auto');
 
+  // Gyroscope State
+  const [gyro, setGyro] = useState({ x: 0, y: 0 });
+  
+  React.useEffect(() => {
+    const handleOrientation = (event) => {
+       // Beta (X axis tilt) -90 to 90
+       // Gamma (Y axis tilt) -90 to 90
+       const x = (event.beta || 0) / 45; // Normalize roughly -1 to 1
+       const y = (event.gamma || 0) / 45;
+       setGyro({ x, y });
+    };
+
+    // IOS 13+ requires permission, but standard API tries to work first
+    // We can just add the listener and if it fires, great.
+    window.addEventListener("deviceorientation", handleOrientation);
+    return () => window.removeEventListener("deviceorientation", handleOrientation);
+  }, []);
+
   // Setup video texture
   const [videoElement] = useState(() => {
     const vid = document.createElement("video");
@@ -69,6 +89,7 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
     e.stopPropagation();
     setHovered(faceName);
     if (setHoveredFaceInfo) setHoveredFaceInfo(faceName);
+    SoundManager.playHover(); // Sound Effect
   };
 
   const handlePointerOut = () => {
@@ -78,6 +99,19 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
 
   const handleClick = (e, faceName) => {
       e.stopPropagation();
+      SoundManager.playClick(); // Sound Effect
+
+      // Request Device Orientation Permission (iOS 13+)
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+          DeviceOrientationEvent.requestPermission()
+              .then(permissionState => {
+                  if (permissionState === 'granted') {
+                      // Permission granted, logic is already handled by useEffect
+                  }
+              })
+              .catch(console.error);
+      }
+
       if (navigate) {
           const routeMap = {
              "Skills": "/skills",
@@ -104,6 +138,18 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
         // Spin from 0 to target
         meshRef.current.rotation.y = targetRotation.current * ease;
       }
+    }
+
+    // Apply Gyroscope Tilt (Parallax Effect)
+    if (meshRef.current && (gyro.x !== 0 || gyro.y !== 0)) {
+        // Smoothly interp to gyro position
+        // Rotate X (up/down tilt) based on Beta (gyro.x)
+        // Rotate Z (side tilt) based on Gamma (gyro.y) - subtle
+        const targetX = gyro.x * 0.5; 
+        const targetZ = gyro.y * 0.2;
+        
+        meshRef.current.rotation.x += (targetX - meshRef.current.rotation.x) * 0.05;
+        meshRef.current.rotation.z += (targetZ - meshRef.current.rotation.z) * 0.05;
     }
 
     // Camera Focus Logic REMOVED to prevent fighting with user rotation
