@@ -188,16 +188,16 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
             {hovered === face.name && (
                 <Html
                     transform
-                    distanceFactor={4}
+                    distanceFactor={5.5} // "Temporary zoom" effect - very close/large
                     zIndexRange={[100, 0]} // Prioritize these elements efficiently
                     position={[0, 0, 0.5]} // Float slightly off face
                     style={{
-                        width: '300px',
+                        width: '500px', // Much wider for readability
                         background: 'transparent',
                         pointerEvents: 'none' // Wrapper none, but children need to be clickable
                     }}
                 >
-                    <div style={{ pointerEvents: 'auto' }}> {/* Ensure interactions work */}
+                    <div style={{ pointerEvents: 'auto', transform: 'scale(1.2)', transformOrigin: 'center center' }}> {/* Forced CSS Scale for extra "pop" */}
                         {renderFaceContent(face.name)}
                     </div>
                 </Html>
