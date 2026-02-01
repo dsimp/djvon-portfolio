@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Environment } from "@react-three/drei";
+import { OrbitControls, Environment, Sparkles } from "@react-three/drei";
 import { FaVolumeUp, FaGithub, FaLinkedin } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Cube from "../Components/Cube";
 import AIChat from "../Components/AIChat";
+import TutorialOverlay from "../Components/TutorialOverlay";
 
 // Camera Animation Component
 const IntroCamera = () => {
@@ -146,6 +147,8 @@ const Home = () => {
       >
         <color attach="background" args={["#e0e0e0"]} /> 
         <Environment preset="studio" />
+        {/* Particle Background - Subtle floating dust */}
+        <Sparkles count={100} scale={25} size={6} speed={0.4} opacity={0.6} color="#007bff" />
         <ambientLight intensity={1.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
         
@@ -167,6 +170,7 @@ const Home = () => {
       </Canvas>
       
       <AIChat />
+      <TutorialOverlay />
     </div>
   );
 };

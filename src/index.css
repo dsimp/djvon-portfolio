@@ -248,4 +248,19 @@ button.primary-btn:hover {
   cursor: pointer;
 }
 
+/* Liquid Animation for Buttons */
+@keyframes liquid-shape {
+  0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+}
+
+.neumorphic-btn:hover, .primary-btn:hover, .neumorphic-inset:hover {
+  animation: liquid-shape 3s infinite linear;
+  box-shadow: 
+    -6px -6px 14px rgba(255, 255, 255, 0.9),
+    6px 6px 10px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05); /* Slight grow */
+}
+
 
