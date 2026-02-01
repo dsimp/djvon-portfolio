@@ -97,7 +97,7 @@ const Home = () => {
                 className="bubbling-text" 
                 style={{ 
                     margin: 0, 
-                    fontSize: 'clamp(3rem, 8vw, 6rem)', // Responsive sizing
+                    fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', // Reduced max size to prevent overlap
                     animation: activePulsate === 'first' ? 'softPulse 0.5s ease-in-out' : 'none',
                     transition: 'all 0.3s ease'
                 }}
@@ -108,7 +108,7 @@ const Home = () => {
                 className="bubbling-text" 
                 style={{ 
                     margin: 0, 
-                    fontSize: 'clamp(3rem, 8vw, 6rem)', // Responsive sizing
+                    fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', // Reduced max size
                     animation: activePulsate === 'last' ? 'softPulse 0.5s ease-in-out' : 'none',
                     transition: 'all 0.3s ease'
                 }}
