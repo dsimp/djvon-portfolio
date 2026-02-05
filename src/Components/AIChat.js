@@ -30,14 +30,27 @@ const AIChat = () => {
 
     try {
       const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash"});
       
-      // Combine system prompt with user input for context
+      // Combine messages for context
       const currentDate = new Date().toLocaleString();
       const fullPrompt = `${SYSTEM_PROMPT}\n\nCurrent Date/Time: ${currentDate}\n\nUser Question: ${input}`;
-      const result = await model.generateContent(fullPrompt);
-      const response = await result.response;
-      const text = response.text();
+
+      let text = "";
+      
+      try {
+        // Try the latest standard model for 2026
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const result = await model.generateContent(fullPrompt);
+        const response = await result.response;
+        text = response.text();
+      } catch (primaryError) {
+        console.warn("Gemini 2.5 Flash failed, trying 2.0:", primaryError);
+        // Fallback to previous stable version
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
+        const result = await model.generateContent(fullPrompt);
+        const response = await result.response;
+        text = response.text();
+      }
       
       const botMessage = { role: 'bot', text: text };
       setMessages(prev => [...prev, botMessage]);
@@ -45,8 +58,13 @@ const AIChat = () => {
 
     } catch (error) {
       console.error("Chat Error Details:", error);
-      console.log("API Key present:", !!process.env.REACT_APP_GEMINI_API_KEY);
-      setMessages(prev => [...prev, { role: 'bot', text: "Sorry, I ran into an error connecting to the AI. Please make sure the API Key is valid." }]);
+      const errorMessage = error.message || "Unknown error";
+      const keyStatus = process.env.REACT_APP_GEMINI_API_KEY ? "Present" : "Missing";
+      
+      setMessages(prev => [...prev, { 
+          role: 'bot', 
+          text: `⚠️ Connection Error: ${errorMessage}. (Key: ${keyStatus})` 
+      }]);
       setIsLoading(false);
     }
   };
