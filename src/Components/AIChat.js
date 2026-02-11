@@ -38,15 +38,15 @@ const AIChat = () => {
       let text = "";
       
       try {
-        // Try the latest standard model for 2026
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        // Try Gemini 2.0 Flash (stable alias if available, or experimental)
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         const result = await model.generateContent(fullPrompt);
         const response = await result.response;
         text = response.text();
       } catch (primaryError) {
-        console.warn("Gemini 2.5 Flash failed, trying 2.0:", primaryError);
-        // Fallback to previous stable version
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
+        console.warn("Gemini 2.0 Flash failed, trying 1.5 Flash:", primaryError);
+        // Fallback to Gemini 1.5 Flash (highly stable)
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const result = await model.generateContent(fullPrompt);
         const response = await result.response;
         text = response.text();
