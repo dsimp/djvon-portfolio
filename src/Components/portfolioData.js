@@ -11,13 +11,13 @@ export const portfolioData = {
     {
       name: "SpiritTail",
       description: "Cocktail Recipe Explorer",
-      link: "https://spirit-tail-1.vercel.app/",
+      link: "https://spirittail.netlify.app/",
       tech: "React, API integration"
     },
     {
       name: "Shift-Cover",
       description: "Scheduling Logistics application",
-      link: "https://github.com/dsimp/shift-cover",
+      link: "https://shift-cover-production.up.railway.app/users/sign_in",
       tech: "Full stack"
     }
   ],
