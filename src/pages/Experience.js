@@ -53,7 +53,7 @@ function Experience({ setProjectHover }) {
                 textAlign: 'center',
                 position: 'relative'
             }}
-            onClick={() => window.open("https://spirit-tail-1.vercel.app/", "_blank")}
+            onClick={() => window.open("https://spirittail.netlify.app/", "_blank")}
         >
             <div style={{ position: 'absolute', left: '-20px', top: '50%', width: '20px', height: '2px', background: '#0ff' }}></div>
             <h4 style={{ margin: 0, color: '#fff', textShadow: '0 0 8px #0ff', letterSpacing: '1px' }}>SPIRIT TAIL</h4>
@@ -77,7 +77,7 @@ function Experience({ setProjectHover }) {
                 textAlign: 'center',
                 position: 'relative'
             }}
-            onClick={() => window.open("https://github.com/dsimp/shift-cover", "_blank")}
+            onClick={() => window.open("https://shift-cover-production.up.railway.app/users/sign_in", "_blank")}
         >
             <div style={{ position: 'absolute', left: '-20px', top: '50%', width: '20px', height: '2px', background: '#4c669f' }}></div>
             <h4 style={{ margin: 0, color: '#fff', fontFamily: 'Impact, sans-serif', textTransform: 'uppercase', letterSpacing: '1px' }}>SHIFT-COVER</h4>
