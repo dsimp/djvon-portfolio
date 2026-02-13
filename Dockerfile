@@ -6,7 +6,8 @@ RUN npm install
 COPY . .
 
 # Embed API Key during build (Required for React App)
-ARG REACT_APP_GEMINI_API_KEY=AIzaSyCBgbVflhFqMzMRjLIJEFsogKuvlTgF3HM
+# API Key is now provided via .env file or build argument
+ARG REACT_APP_GEMINI_API_KEY
 ENV REACT_APP_GEMINI_API_KEY=$REACT_APP_GEMINI_API_KEY
 
 RUN npm run build

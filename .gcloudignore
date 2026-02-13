@@ -1,0 +1,11 @@
+# .gcloudignore
+# Include everything from .gitignore
+#!include:.gitignore
+
+# But allowing .env and .env.production to be uploaded to Cloud Build
+!.env
+!.env.production
+
+# Ignore .git folder (standard)
+.git
+.github
