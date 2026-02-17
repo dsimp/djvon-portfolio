@@ -18,8 +18,10 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 // API Route
 app.post('/api/chat', async (req, res) => {
+    console.log("Received POST request at /api/chat");
     try {
         const { message } = req.body;
+        console.log("Request body:", JSON.stringify(req.body));
         
         if (!process.env.REACT_APP_GEMINI_API_KEY) {
              console.error("API Key is missing on server");
