@@ -31,7 +31,7 @@ app.post('/api/chat', async (req, res) => {
         // Use a model that is likely to exist. 
         // 1.5 Flash is standard, but if it fails, we can try others.
         // For now, let's stick to the one we want to use.
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const result = await model.generateContent(message);
         const response = await result.response;
