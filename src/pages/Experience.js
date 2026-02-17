@@ -29,7 +29,7 @@ function Experience({ setProjectHover }) {
       
       <motion.div className="card-section" variants={itemVariants}>
         <p style={{ lineHeight: '1.6', fontSize: '0.9rem', color: '#666' }}>
-          It started in quarantine with a curiosity for code and evolved into an obsession with digital craftsmanship. I structure logic, optimize performance, and deliver seamless experiences.
+          My journey is defined by a relentless pursuit of engineering excellence. From the architecture of a backend to the pixel-perfect precision of a frontend, I build systems that come alive.
         </p>
       </motion.div>
 

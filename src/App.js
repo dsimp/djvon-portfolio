@@ -83,7 +83,7 @@ function AppContent() {
       exit={{ opacity: 0, scale: 1.02 }} 
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-    >
+
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />

@@ -1,0 +1,12 @@
+npm warn Unknown user config "msvs_version". This will stop working in the next major version of npm.
+npm warn Unknown user config "python". This will stop working in the next major version of npm.
+
+> djvon-portfolio@0.1.0 build
+> react-scripts build
+
+Creating an optimized production build...
+
+
+#
+# Fatal process out of memory: Zone
+#

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaPaperPlane, FaTimes } from 'react-icons/fa';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+// GoogleGenerativeAI moved to backend
 import { SYSTEM_PROMPT } from "./portfolioData";
 
 const AIChat = () => {
@@ -29,41 +29,31 @@ const AIChat = () => {
     setIsLoading(true);
 
     try {
-      const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-      
-      // Combine messages for context
-      const currentDate = new Date().toLocaleString();
-      const fullPrompt = `${SYSTEM_PROMPT}\n\nCurrent Date/Time: ${currentDate}\n\nUser Question: ${input}`;
+      const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+              message: `${SYSTEM_PROMPT}\n\nCurrent Date/Time: ${new Date().toLocaleString()}\n\nUser Question: ${input}` 
+          }),
+      });
 
-      let text = "";
-      
-      try {
-        // Try Gemini 2.0 Flash (stable alias if available, or experimental)
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const result = await model.generateContent(fullPrompt);
-        const response = await result.response;
-        text = response.text();
-      } catch (primaryError) {
-        console.warn("Gemini 2.0 Flash failed, trying 1.5 Flash:", primaryError);
-        // Fallback to Gemini 1.5 Flash (highly stable)
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(fullPrompt);
-        const response = await result.response;
-        text = response.text();
+      if (!response.ok) {
+          throw new Error(`Server error: ${response.statusText}`);
       }
+
+      const data = await response.json();
       
-      const botMessage = { role: 'bot', text: text };
+      const botMessage = { role: 'bot', text: data.text };
       setMessages(prev => [...prev, botMessage]);
       setIsLoading(false);
 
     } catch (error) {
       console.error("Chat Error Details:", error);
-      const errorMessage = error.message || "Unknown error";
-      const keyStatus = process.env.REACT_APP_GEMINI_API_KEY ? "Present" : "Missing";
-      
       setMessages(prev => [...prev, { 
           role: 'bot', 
-          text: `⚠️ Connection Error: ${errorMessage}. (Key: ${keyStatus})` 
+          text: `⚠️ Connection Error: ${error.message}` 
       }]);
       setIsLoading(false);
     }

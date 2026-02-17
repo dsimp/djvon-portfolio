@@ -2,7 +2,7 @@ export const portfolioData = {
   name: "Djvon Simpson",
   title: "Software Engineer",
   location: "Chicago, IL",
-  bio: "started in quarantine with a curiosity for code and evolved into an obsession with digital craftsmanship. I structure logic, optimize performance, and deliver seamless experiences. I don't just code; I create worlds.",
+  bio: "A proficient and dedicated Software Engineer with a passion for building scalable, high-performance web applications. I structure logic, optimize performance, and deliver seamless user experiences.",
   skills: [
     "JavaScript (Expert)", "React", "Redux", "Node.js", "Express",
     "TypeScript", "Python", "Ruby on Rails", "Docker", "PostgreSQL", "RSpec"
