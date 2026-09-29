@@ -13,7 +13,7 @@ body {
   padding: 0;
 }
 
-nav {
+.headnav {
   position: fixed; /* Sticks to the top, like a helmet strap */
   width: 100%; /* Full screen wide */
   background-color: rgba(
@@ -21,27 +21,27 @@ nav {
     255,
     255,
     0.9
-  ); /* Mostly white, slightly see-through for glass effect—like "Scream"'s glossy panels */
+  ); /* Mostly white, slightly see-through for glass effect */
   list-style-type: none; /* No list dots */
   margin: 0;
   padding: 10px 0; /* Space top/bottom */
   font-size: 22px; /* Big, readable text */
   z-index: 5; /* On top of everything */
   text-align: center; /* Centers links */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow below, like a floating panel in space */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-nav a {
+.headnav a {
   color: black; /* Black links for contrast */
   padding: 14px 16px; /* Space around, like comfy buttons */
   text-decoration: none; /* No underlines—clean! */
-  transition: all 0.3s ease; /* Smooth change on hover, like a gentle whoosh */
+  transition: all 0.3s ease;
 }
 
-nav a:hover {
-  color: #00bfff; /* Neon blue on hover, like a sci-fi laser in "Scream"—cool and futuristic */
-  text-shadow: 0 0 5px #00bfff; /* Blue glow shadow for that high-tech vibe */
-  background-color: rgba(240, 240, 240, 0.5); /* Light gray hover, subtle */
+.headnav a:hover {
+  color: #00bfff;
+  text-shadow: 0 0 5px #00bfff;
+  background-color: rgba(240, 240, 240, 0.5);
 }
 
 .glass-panel {

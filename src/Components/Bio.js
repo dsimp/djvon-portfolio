@@ -2,7 +2,7 @@ import React from "react";
 import Djvon from "./Images/IMG_0539.jpeg";
 import Slideshow from "./Slideshow";
 
-const Bio = () => {
+const Bio = ({ onOpenResume }) => {
   return (
     <div className="glass-card">
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -18,9 +18,19 @@ const Bio = () => {
       </div>
       
       <div className="card-section" style={{ background: 'rgba(255,255,255,0.4)', borderRadius: '12px', padding: '1rem', marginTop: '1rem' }}>
-        <p style={{ fontSize: '1.0rem', lineHeight: '1.6', fontStyle: 'italic', color: '#333' }}>
+        <p style={{ fontSize: '1.0rem', lineHeight: '1.6', fontStyle: 'italic', color: '#333', margin: 0 }}>
           "The power to dream something into reality is what drives me. From the architecture of a backend to the pixel-perfect precision of a frontend, I build systems that come alive. I don't just code; I create worlds."
         </p>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'center', margin: '0.8rem 0' }}>
+        <button
+          className="resume-action-btn primary"
+          onClick={() => (onOpenResume ? onOpenResume() : window.open("/Djvon_Simpson_Resume.pdf", "_blank"))}
+          style={{ cursor: 'pointer', padding: '8px 18px', fontSize: '0.85rem' }}
+        >
+          📄 View & Download Full Resume
+        </button>
       </div>
 
       <div style={{ marginTop: 'auto' }}>

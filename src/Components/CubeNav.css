@@ -1,0 +1,153 @@
+/* Minimalist Neumorphic Right-Side Navigation Dock */
+.cube-nav-container {
+  position: fixed;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: auto;
+  max-width: 60px;
+  box-sizing: border-box;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: rgba(224, 224, 224, 0.7);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 8px 6px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    4px 4px 10px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.cube-nav-divider {
+  width: 24px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 2px 0;
+}
+
+.cube-nav-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #444;
+  font-size: 1.05rem;
+  box-shadow: 
+    -3px -3px 7px rgba(255, 255, 255, 0.85),
+    3px 3px 7px rgba(0, 0, 0, 0.12);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cube-nav-btn:active {
+  transform: scale(0.93);
+}
+
+/* Active State - Matches Left-Side Neumorphic Inset Buttons */
+.cube-nav-btn.active {
+  background: #d8d8d8;
+  border-color: #00bfff;
+  color: #007bff;
+  box-shadow: 
+    inset 3px 3px 6px rgba(0, 0, 0, 0.18),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.8),
+    0 0 10px rgba(0, 191, 255, 0.3);
+}
+
+.cube-nav-btn.active svg {
+  filter: drop-shadow(0 0 5px rgba(0, 191, 255, 0.7));
+}
+
+.cube-nav-btn.resume-nav-btn {
+  color: #007bff;
+}
+
+.cube-nav-btn.resume-nav-btn:hover {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* Tooltip on Desktop */
+.cube-nav-tooltip {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cube-nav-btn:hover {
+    color: #007bff;
+    transform: scale(1.08);
+    box-shadow: 
+      -4px -4px 10px rgba(255, 255, 255, 0.95),
+      4px 4px 12px rgba(0, 191, 255, 0.25);
+  }
+
+  .cube-nav-tooltip {
+    display: block;
+    position: absolute;
+    right: 54px;
+    top: 50%;
+    transform: translateY(-50%) translateX(6px);
+    background: rgba(25, 30, 40, 0.9);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 5px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 191, 255, 0.35);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  .cube-nav-btn:hover .cube-nav-tooltip {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* Desktop sizing adjustments */
+@media (min-width: 768px) {
+  .cube-nav-container {
+    right: 22px;
+    padding: 10px 8px;
+    gap: 10px;
+  }
+
+  .cube-nav-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.15rem;
+  }
+}
+
+/* Compact screens */
+@media (max-height: 580px) {
+  .cube-nav-container {
+    gap: 5px;
+    padding: 5px 4px;
+  }
+  .cube-nav-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 0.95rem;
+  }
+}

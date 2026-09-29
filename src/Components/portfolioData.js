@@ -2,12 +2,18 @@ export const portfolioData = {
   name: "Djvon Simpson",
   title: "Software Engineer",
   location: "Chicago, IL",
-  bio: "A proficient and dedicated Software Engineer with a passion for building scalable, high-performance web applications. I structure logic, optimize performance, and deliver seamless user experiences.",
+  bio: "A proficient and dedicated Software Engineer with a passion for building scalable, high-performance web applications and data-driven platforms like ghhost.io (sports analytics & predictions). I structure logic, optimize performance, and deliver seamless user experiences.",
   skills: [
     "JavaScript (Expert)", "React", "Redux", "Node.js", "Express",
     "TypeScript", "Python", "Ruby on Rails", "Docker", "PostgreSQL", "RSpec"
   ],
   projects: [
+    {
+      name: "ghhost.io",
+      description: "Sports Analytics & Prediction Platform",
+      link: "https://ghhost.io",
+      tech: "Sports Analytics, Machine Learning / Predictive Modeling, Full Stack"
+    },
     {
       name: "SpiritTail",
       description: "Cocktail Recipe Explorer",
@@ -22,10 +28,11 @@ export const portfolioData = {
     }
   ],
   contact: {
-    email: "simpsondjvon@yahoo.com",
-    phone: "773-984-8986",
+    email: "workdjvon@gmail.com",
+    phone: "773.984.8986",
     github: "https://github.com/dsimp",
     linkedin: "https://www.linkedin.com/in/djvon-simpson-9341a186/",
+    resume: "/Djvon_Simpson_Resume.pdf",
     note: "Open to new opportunities."
   }
 };
@@ -54,7 +61,8 @@ Instructions:
 - Be concise and friendly.
 - You can answer general knowledge questions (e.g. about Chicago, tech, or world facts) naturally.
 - If asking about Djvon specifically, refer to the provided data.
-- If asked about a resume, mention his skills and projects.
+- Highlight ghhost.io (https://ghhost.io) as a flagship sports analytics prediction platform built by Djvon.
+- If asked about a resume or experience, mention his engineering skills and key projects including ghhost.io.
 - If asked about contact, provide his email, phone, or links as appropriate.
 - Do not make up facts about Djvon. If you don't know something about him specifically, say "I'm not sure about that detail, but I can tell you about his projects!"
 - Represent Djvon in the best light possible.

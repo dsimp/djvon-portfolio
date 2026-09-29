@@ -11,36 +11,49 @@ import Connect from "../Components/Connect";
 import SoundManager from "../utils/SoundManager";
 
 const VIDEO_URL = "/journeyvid.mp4";
-const HOVER_SCALE = 1.05; // Reverted to subtle zoom
-const NORMAL_SCALE = 1;
+const HOVER_SCALE = 1.05;
 
-// Map face names to their content components
-const FACE_CONTENT = {
-  "Skills": <Skills />,
-  "Experience": <Experience />,
-  "Projects": <Projects />,
-  "Bio": <Bio />,
-  "Connect": <Connect />
+const FACE_ROTATIONS = {
+  "Front": new THREE.Euler(0, 0, 0),
+  "Experience": new THREE.Euler(0, Math.PI / 2, 0),
+  "Skills": new THREE.Euler(0, -Math.PI / 2, 0),
+  "Projects": new THREE.Euler(Math.PI / 2, 0, 0),
+  "Bio": new THREE.Euler(-Math.PI / 2, 0, 0),
+  "Connect": new THREE.Euler(0, Math.PI, 0),
 };
 
+const FACE_NORMALS = [
+  { name: "Front", normal: new THREE.Vector3(0, 0, 1) },
+  { name: "Experience", normal: new THREE.Vector3(-1, 0, 0) },
+  { name: "Skills", normal: new THREE.Vector3(1, 0, 0) },
+  { name: "Projects", normal: new THREE.Vector3(0, 1, 0) },
+  { name: "Bio", normal: new THREE.Vector3(0, -1, 0) },
+  { name: "Connect", normal: new THREE.Vector3(0, 0, -1) },
+];
+
 const FACE_CONFIG = [
-  { name: "Skills",        position: [2.8, 0, 0],   rotation: [0, Math.PI / 2, 0] },
   { name: "Experience",    position: [-2.8, 0, 0],  rotation: [0, -Math.PI / 2, 0] },
+  { name: "Skills",        position: [2.8, 0, 0],   rotation: [0, Math.PI / 2, 0] },
   { name: "Projects",      position: [0, 2.8, 0],   rotation: [-Math.PI / 2, 0, 0] },
   { name: "Bio",           position: [0, -2.8, 0],  rotation: [Math.PI / 2, 0, 0] },
   { name: "Connect",       position: [0, 0, -2.8],  rotation: [0, Math.PI, 0] },
 ];
 
-const Cube = ({ setHoveredFaceInfo, navigate }) => {
+const Cube = ({ setHoveredFaceInfo, navigate, targetFace, controlsRef, onFaceDetected, onOpenResume }) => {
   const meshRef = useRef(null);
   const introTime = useRef(0);
   // Random target: 1 full spin (2PI) + random 0-180 (PI) for slower intro
   const targetRotation = useRef(Math.PI * 2 + Math.random() * Math.PI);
   const [hovered, setHovered] = useState(null);
+  const [selectedFace, setSelectedFace] = useState(null);
+  const [, setProjectHover] = useState(null);
+
+  const targetQuaternion = useRef(null);
+  const isTransitioning = useRef(false);
+  const checkFaceTimer = useRef(0);
   
   const { viewport } = useThree();
   const isMobile = viewport.width < 14; // Higher threshold to catch split-screens/tablets
-  const responsiveScale = isMobile ? 0.5 : 1; 
 
   useCursor(!!hovered, 'pointer', 'auto');
 
@@ -125,44 +138,86 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
       }
   };
 
-  const [projectHover, setProjectHover] = useState(null);
-
-  // Dynamic Camera Movement on Project Hover
-  useFrame((state, delta) => {
-    // Intro Rotation Animation (5 seconds)
-    if (introTime.current < 5) {
-      introTime.current += delta;
-      const progress = Math.min(introTime.current / 5, 1);
-      const ease = 1 - Math.pow(1 - progress, 3); // Cubic ease out
-      if (meshRef.current) {
-        // Spin from 0 to target
-        meshRef.current.rotation.y = targetRotation.current * ease;
+  React.useEffect(() => {
+    if (targetFace && FACE_ROTATIONS[targetFace]) {
+      introTime.current = 5; // cancel intro spin if user navigates
+      const targetEuler = FACE_ROTATIONS[targetFace];
+      targetQuaternion.current = new THREE.Quaternion().setFromEuler(targetEuler);
+      isTransitioning.current = true;
+      if (targetFace !== "Front") {
+        setSelectedFace(targetFace);
+      } else {
+        setSelectedFace(null);
       }
     }
+  }, [targetFace]);
 
-    // Apply Gyroscope Tilt (Parallax Effect)
-    if (meshRef.current && (gyro.x !== 0 || gyro.y !== 0)) {
-        // Smoothly interp to gyro position
-        // Rotate X (up/down tilt) based on Beta (gyro.x)
-        // Rotate Z (side tilt) based on Gamma (gyro.y) - subtle
-        const targetX = gyro.x * 0.5; 
-        const targetZ = gyro.y * 0.2;
+  // Dynamic Camera Movement & Rotation Loop
+  useFrame((state, delta) => {
+    // Handle programmatic rotation transition to selected face
+    if (isTransitioning.current && targetQuaternion.current && meshRef.current) {
+      meshRef.current.quaternion.slerp(targetQuaternion.current, 0.08);
+
+      // Smoothly reset camera position to [0, 0, 18] and controls target to [0, 0, 0]
+      const defaultCamPos = new THREE.Vector3(0, 0, 18);
+      state.camera.position.lerp(defaultCamPos, 0.08);
+      if (controlsRef && controlsRef.current) {
+        controlsRef.current.target.lerp(new THREE.Vector3(0, 0, 0), 0.08);
+        controlsRef.current.update();
+      }
+
+      // Check if settled
+      if (
+        meshRef.current.quaternion.angleTo(targetQuaternion.current) < 0.01 &&
+        state.camera.position.distanceTo(defaultCamPos) < 0.1
+      ) {
+        meshRef.current.quaternion.copy(targetQuaternion.current);
+        isTransitioning.current = false;
+      }
+    } else {
+      // Intro Rotation Animation (5 seconds) - only when not transitioning
+      if (introTime.current < 5) {
+        introTime.current += delta;
+        const progress = Math.min(introTime.current / 5, 1);
+        const ease = 1 - Math.pow(1 - progress, 3); // Cubic ease out
+        if (meshRef.current) {
+          meshRef.current.rotation.y = targetRotation.current * ease;
+        }
+      }
+
+      // Apply Gyroscope Tilt (Parallax Effect)
+      if (meshRef.current && (gyro.x !== 0 || gyro.y !== 0)) {
+          const targetX = gyro.x * 0.5; 
+          const targetZ = gyro.y * 0.2;
+          
+          meshRef.current.rotation.x += (targetX - meshRef.current.rotation.x) * 0.05;
+          meshRef.current.rotation.z += (targetZ - meshRef.current.rotation.z) * 0.05;
+      }
+
+      // Detect which face is currently pointing at the camera (for syncing active side button)
+      checkFaceTimer.current += delta;
+      if (checkFaceTimer.current > 0.2 && meshRef.current && onFaceDetected) {
+        checkFaceTimer.current = 0;
+        const camDir = new THREE.Vector3();
+        state.camera.getWorldDirection(camDir).negate(); // Vector from cube towards camera
         
-        meshRef.current.rotation.x += (targetX - meshRef.current.rotation.x) * 0.05;
-        meshRef.current.rotation.z += (targetZ - meshRef.current.rotation.z) * 0.05;
-    }
+        let bestFace = null;
+        let bestDot = 0.75; // Threshold
 
-    // Camera Focus Logic REMOVED to prevent fighting with user rotation
-    // if (projectHover) {
-    //    // Target position based on project
-    //    const targetPos = new THREE.Vector3(0, 0, 16); // Zoom in closer
-    //    if (projectHover === 'SpiritTail') {
-    //        targetPos.set(4, 2, 14); // Angle right/up
-    //    } else if (projectHover === 'ShiftCover') {
-    //        targetPos.set(-4, -2, 14); // Angle left/down
-    //    }
-    //    state.camera.position.lerp(targetPos, delta * 2);
-    // }
+        for (const face of FACE_NORMALS) {
+          const worldNormal = face.normal.clone().applyQuaternion(meshRef.current.quaternion);
+          const dot = worldNormal.dot(camDir);
+          if (dot > bestDot) {
+            bestDot = dot;
+            bestFace = face.name;
+          }
+        }
+
+        if (bestFace) {
+          onFaceDetected(bestFace);
+        }
+      }
+    }
 
     // Normal Hover Animation
     if (meshRef.current) {
@@ -173,7 +228,7 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
   });
 
   const renderFaceContent = (name) => {
-      const commonProps = { setProjectHover };
+      const commonProps = { setProjectHover, onOpenResume };
       switch (name) {
           case "Skills": return <Skills {...commonProps} />;
           case "Experience": return <Experience {...commonProps} />;
@@ -183,8 +238,6 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
           default: return null;
       }
   };
-
-  // ... (Lines 80-101: Material) ...
 
   // Common Material
   const glassMaterial = (
@@ -196,8 +249,6 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
       transmission={0}
     />
   );
-
-  // "Center the cube on ALL screen sizes... like it was once before"
   
   return (
     <group position={[0, 0, 0]}>
@@ -230,20 +281,56 @@ const Cube = ({ setHoveredFaceInfo, navigate }) => {
               {face.name}
             </Text>
 
-            {/* 3D Pop-out View */}
-            {hovered === face.name && (
+            {/* 3D Pop-out View: Shown on Hover OR when Selected via Navigation */}
+            {(hovered === face.name || selectedFace === face.name) && (
                 <Html
                     transform
-                    distanceFactor={5.5} // "Temporary zoom" effect - very close/large
-                    zIndexRange={[100, 0]} // Prioritize these elements efficiently
-                    position={[0, 0, 0.5]} // Float slightly off face
+                    distanceFactor={isMobile ? 7 : 5.5}
+                    zIndexRange={[100, 0]}
+                    position={[0, 0, 0.5]}
                     style={{
-                        width: '500px', // Much wider for readability
+                        width: isMobile ? '340px' : '500px',
                         background: 'transparent',
-                        pointerEvents: 'none' // Wrapper none, but children need to be clickable
+                        pointerEvents: 'none'
                     }}
                 >
-                    <div style={{ pointerEvents: 'auto', transform: 'scale(1.2)', transformOrigin: 'center center' }}> {/* Forced CSS Scale for extra "pop" */}
+                    <div style={{ 
+                        pointerEvents: 'auto', 
+                        transform: isMobile ? 'scale(0.95)' : 'scale(1.15)', 
+                        transformOrigin: 'center center',
+                        position: 'relative'
+                    }}>
+                        {/* Quick close button to dismiss popout info card */}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedFace(null);
+                                setHovered(null);
+                            }}
+                            style={{
+                                position: 'absolute',
+                                top: '-10px',
+                                right: '-10px',
+                                width: '30px',
+                                height: '30px',
+                                borderRadius: '50%',
+                                background: '#e0e0e0',
+                                border: '1px solid rgba(0,0,0,0.15)',
+                                boxShadow: '0 3px 8px rgba(0,0,0,0.2)',
+                                color: '#333',
+                                fontSize: '1.2rem',
+                                fontWeight: 'bold',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                zIndex: 1000
+                            }}
+                            aria-label="Dismiss info card"
+                            title="Close Info"
+                        >
+                            ×
+                        </button>
                         {renderFaceContent(face.name)}
                     </div>
                 </Html>

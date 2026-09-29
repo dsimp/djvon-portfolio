@@ -1,32 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import * as THREE from "three";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment, Sparkles } from "@react-three/drei";
-import { FaVolumeUp, FaGithub, FaLinkedin } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { FaVolumeUp, FaGithub, FaLinkedin, FaFileAlt } from "react-icons/fa";
 import Cube from "../Components/Cube";
+import CubeNav from "../Components/CubeNav";
+import ResumeModal from "../Components/ResumeModal";
 import AIChat from "../Components/AIChat";
 import TutorialOverlay from "../Components/TutorialOverlay";
 
-// Camera Animation Component
-const IntroCamera = () => {
-  const { camera } = useThree();
-  
-  useFrame((state, delta) => {
-    // Smoothly fly camera from z=40 to z=14
-    // We only want this to run at the start. 
-    // Lerping continuously to 14 is fine as long as OrbitControls is aware or we stop interaction initially.
-    // However, simplest "fly in" is to just lerp until close.
-    if (camera.position.z > 14.1) {
-        camera.position.z = THREE.MathUtils.lerp(camera.position.z, 14, delta * 2);
-    }
-  });
-  return null;
-};
-
 const Home = () => {
   const [activePulsate, setActivePulsate] = useState(null);
+  const [targetFace, setTargetFace] = useState(null);
+  const [activeFace, setActiveFace] = useState("Front");
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
+  const controlsRef = useRef(null);
   const navigate = useNavigate();
 
   const handleSpeak = () => {
@@ -133,8 +121,17 @@ const Home = () => {
                     className="neumorphic-inset" 
                     onClick={handleSpeak}
                     aria-label="Pronounce Name"
+                    title="Pronounce Name"
                 >
                     <FaVolumeUp size={24} color="#333" />
+                </button>
+                <button 
+                    className="neumorphic-inset" 
+                    onClick={() => setIsResumeOpen(true)}
+                    aria-label="View Resume"
+                    title="View & Download Resume"
+                >
+                    <FaFileAlt size={22} color="#171515" />
                 </button>
             </div>
         </div>
@@ -152,11 +149,16 @@ const Home = () => {
         <ambientLight intensity={1.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
         
-        {/* <IntroCamera /> Removed to prevent fighting with controls */}
-        
-        <Cube navigate={navigate} />
+        <Cube 
+            navigate={navigate} 
+            targetFace={targetFace}
+            controlsRef={controlsRef}
+            onFaceDetected={(face) => setActiveFace(face)}
+            onOpenResume={() => setIsResumeOpen(true)}
+        />
         
         <OrbitControls 
+            ref={controlsRef}
             enableZoom={true} 
             enablePan={true} // Allow user to move the whole scene "free across the screen"
             enableDamping={true} 
@@ -169,6 +171,21 @@ const Home = () => {
         />
       </Canvas>
       
+      <CubeNav 
+        activeFace={activeFace}
+        onSelectFace={(face) => {
+          setActiveFace(face);
+          setTargetFace(face);
+        }}
+        onOpenResume={() => setIsResumeOpen(true)}
+        navigate={navigate}
+      />
+
+      <ResumeModal 
+        isOpen={isResumeOpen}
+        onClose={() => setIsResumeOpen(false)}
+      />
+
       <AIChat />
       <TutorialOverlay />
     </div>
